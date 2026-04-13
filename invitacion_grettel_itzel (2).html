@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Mis XV Años - Grettel Itzel</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #111; display: flex; justify-content: center; min-height: 100vh; font-family: sans-serif; }
+  .inv-wrapper { width: 100%; max-width: 430px; }
+  .bg-frame { position: relative; width: 100%; background: #1a1a1a; }
+  .bg-img {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: fill; pointer-events: none; z-index: 0;
+  }
+  .content {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    padding-left: 12%; padding-right: 12%;
+  }
+  .sp-top    { height: 28vw; max-height: 120px; }
+  .sp-bottom { height: 13vw; max-height: 56px; }
+
+  /* mix-blend-mode: screen elimina el negro de los recursos */
+  .res { display: block; object-fit: contain; max-width: 100%; mix-blend-mode: screen; }
+
+  /* AUDIO */
+  #audioImg { width: 40%; margin-bottom: 0; cursor: pointer; transition: opacity 0.15s; }
+  #audioImg:active { opacity: 0.75; }
+  #audioImg.playing { filter: brightness(1.15); }
+
+  /* GRETTEL ITZEL — tiene espacio vacío abajo, compensamos con margin negativo */
+  #nombreImg { width: 98%; margin-top: 0; margin-bottom: 0%; }
+
+  /* MIS XV AÑOS */
+  #misxvImg { width: 58%; margin-bottom: 10%; }
+
+  /* FRASE */
+  #fraseImg { width: 88%; margin-bottom: 3%; }
+
+  /* FALTAN */
+  .faltan-wrap { position: relative; width: 100%; margin-bottom: 4%; }
+  #faltanImg { width: 100%; }
+
+  /* Números del contador flotando sobre las cajas del Faltan */
+  #countOverlay {
+    position: absolute;
+    display: flex; justify-content: space-around; align-items: center;
+    pointer-events: none;
+    top: 38%; left: 2%; width: 96%; height: 35%;
+  }
+  #countOverlay span {
+    flex: 1; text-align: center;
+    font-size: clamp(16px, 5.5vw, 30px);
+    font-weight: 900; color: #d4a820;
+    font-family: 'Arial Narrow', Arial, sans-serif; line-height: 1;
+  }
+
+  /* DOS COLUMNAS */
+  .row-btns { width: 100%; display: flex; gap: 3%; align-items: flex-start; margin-bottom: 3%; }
+  .col-btn  { flex: 1; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+  .col-btn img { width: 75%; }
+
+  /* VESTIMENTA */
+  #vestimentaImg { width: 70%; margin-bottom: 0; }
+
+  #audioEl { display: none; }
+</style>
+</head>
+<body>
+<div class="inv-wrapper">
+  <div class="bg-frame">
+    <img class="bg-img" src="Recurso 24GRETTEL.png" alt="Fondo">
+    <div class="content">
+      <div class="sp-top"></div>
+
+      <!-- 1. AUDIO -->
+      <img class="res" id="audioImg" src="erIXDC.tifGRETTEL.png" alt="Audio" title="Toca para escuchar">
+      <audio id="audioEl" src="HERMOSO CARIÑO  ARCANO.mp3" loop></audio>
+
+      <!-- 2. GRETTEL ITZEL -->
+      <img class="res" id="nombreImg" src="Recurso 17GRETTEL.png" alt="Grettel Itzel">
+
+      <!-- 3. MIS XV AÑOS -->
+      <img class="res" id="misxvImg" src="Recurso 18GRETTEL.png" alt="Mis XV años">
+
+      <!-- 4. FRASE -->
+      <img class="res" id="fraseImg" src="Recurso 22GRETTEL.png" alt="Frase">
+
+      <!-- 5. FALTAN con contador encima -->
+      <div class="faltan-wrap">
+        <img class="res" id="faltanImg" src="Recurso 21GRETTEL.png" alt="Faltan">
+        <div id="countOverlay">
+          <span id="cDias">00</span>
+          <span id="cHoras">00</span>
+          <span id="cMins">00</span>
+          <span id="cSegs">00</span>
+        </div>
+      </div>
+
+      <!-- 6. DOS COLUMNAS: LUGAR | ESPERAMOS -->
+      <div class="row-btns">
+        <div class="col-btn" onclick="window.open('https://maps.google.com/?q=Casa+Ejidal+Tecpatan+Chiapas','_blank')">
+          <img class="res" src="Recurso 23GRETTEL.png" alt="Ver ubicación">
+        </div>
+        <div class="col-btn" onclick="window.open('https://wa.me/?text=Confirmo+mi+asistencia+a+los+XV+de+Grettel+Itzel','_blank')">
+          <img class="res" src="Recurso 16GRETTEL.png" alt="Confirmar asistencia">
+        </div>
+      </div>
+
+      <!-- 7. VESTIMENTA -->
+      <img class="res" id="vestimentaImg" src="Recurso 20GRETTEL.png" alt="Código de vestimenta">
+
+      <div class="sp-bottom"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // AUDIO
+  const audioEl = document.getElementById('audioEl');
+  const audioImg = document.getElementById('audioImg');
+  let playing = false;
+  audioImg.addEventListener('click', () => {
+    if (!playing) {
+      audioEl.play().then(() => { playing = true; audioImg.classList.add('playing'); }).catch(() => {});
+    } else {
+      audioEl.pause(); playing = false; audioImg.classList.remove('playing');
+    }
+  });
+
+  // CONTADOR
+  function tick() {
+    const diff = new Date('2026-05-17T17:00:00') - new Date();
+    const pad = n => String(Math.max(0, Math.floor(n))).padStart(2, '0');
+    if (diff <= 0) { ['cDias','cHoras','cMins','cSegs'].forEach(id => document.getElementById(id).textContent = '00'); return; }
+    document.getElementById('cDias').textContent  = pad(diff / 86400000);
+    document.getElementById('cHoras').textContent = pad(diff % 86400000 / 3600000);
+    document.getElementById('cMins').textContent  = pad(diff % 3600000 / 60000);
+    document.getElementById('cSegs').textContent  = pad(diff % 60000 / 1000);
+  }
+  tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>
