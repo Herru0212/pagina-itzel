@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>XV Años - Grettel Itzel</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#1a1a1a; display:flex; justify-content:center; min-height:100vh; font-family:sans-serif; }
+
+/* LOADER */
+#loader {
+  position:fixed; inset:0; background:#1a1a1a; z-index:9999;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px;
+  transition: opacity .8s ease, visibility .8s ease;
+}
+#loader.hidden { opacity:0; visibility:hidden; }
+.ld-flowers { position:relative; width:100px; height:100px; }
+.ld-ring { position:absolute; inset:0; animation:spinF 4s linear infinite; }
+@keyframes spinF { to { transform:rotate(360deg); } }
+.ld-crown { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:34px; animation:pulseC 1.6s ease-in-out infinite; }
+@keyframes pulseC { 50%{ transform:scale(1.15); } }
+.ld-name { font-family:Georgia,serif; font-style:italic; font-size:clamp(20px,5.5vw,28px); color:#fff; letter-spacing:2px; }
+.ld-name span { color:#d4a820; }
+.ld-bar-wrap { width:190px; height:4px; background:rgba(255,255,255,.15); border-radius:4px; overflow:hidden; }
+.ld-bar { height:100%; width:0%; background:linear-gradient(90deg,#d4a820,#f5d77a,#d4a820); background-size:200% 100%; border-radius:4px; animation:shimmer 1.5s linear infinite; transition:width .3s ease; }
+@keyframes shimmer { to{ background-position:-200% 0; } }
+.ld-txt { font-size:11px; color:rgba(255,255,255,.45); letter-spacing:3px; text-transform:uppercase; }
+.cdot { position:absolute; border-radius:50%; opacity:.7; animation:floatD 3s ease-in-out infinite; }
+@keyframes floatD { 50%{ transform:translateY(-12px); opacity:1; } }
+
+/* INVITACIÓN */
+.inv-wrapper { width:100%; max-width:430px; position:relative; }
+
+.bg-frame { position:relative; width:100%; background:#1a1a1a; }
+
+/* Fondo oscuro */
+.bg-img {
+  position:absolute; top:0; left:0;
+  width:100%; height:100%;
+  object-fit:fill;
+  pointer-events:none; z-index:0;
+}
+
+.bg-marco { display:none; } /* quitamos el anterior */
+
+.borde-lateral {
+  position:absolute; top:5vw; left:0;
+  width:100%; height:100%;
+  object-fit:fill;
+  pointer-events:none; z-index:1;
+  mix-blend-mode:screen;
+}
+.borde-top {
+  position:absolute; top:0; left:0;
+  width:100%;
+  pointer-events:none; z-index:2;
+  mix-blend-mode:screen;
+}
+.borde-bottom {
+  position:absolute; bottom:0; left:0;
+  width:100%;
+  pointer-events:none; z-index:2;
+  mix-blend-mode:screen;
+  transform:rotate(180deg);
+  transform-origin: center bottom;
+}
+
+.content {
+  position:relative; z-index:2;
+  display:flex; flex-direction:column; align-items:center;
+  padding:0 12%;
+}
+
+.res { display:block; object-fit:contain; max-width:100%; mix-blend-mode:screen; image-rendering:high-quality; }
+.res-normal { display:block; object-fit:contain; max-width:100%; image-rendering:high-quality; }
+
+.sp-top    { height:8vw;  max-height:34px; }
+.sp-bottom { height:12vw; max-height:50px; }
+.sp        { height:3vw;  max-height:13px; }
+.sp2       { height:5vw;  max-height:22px; }
+.sp3       { height:8vw;  max-height:34px; }
+
+/* PAPEL PICADO — ancho completo sin padding */
+.papel-wrap {
+  width:100%; margin:0 -12%;
+  mix-blend-mode:screen;
+}
+.papel-wrap img { width:100%; display:block; mix-blend-mode:screen; }
+
+/* CONFETI — ancho completo */
+.confeti-wrap {
+  width:100%; margin:0 -12%;
+  mix-blend-mode:screen;
+  pointer-events:none;
+  margin-top:-6vw;
+  margin-bottom:0;
+}
+.confeti-wrap img { width:100%; display:block; mix-blend-mode:screen; }
+
+#portadaImg   { width:92%; }
+#presionaImg  { width:72%; }
+#misquinceImg { width:78%; }
+#fraseImg     { width:96%; }
+#fotoImg      { width:80%; }
+#fechaImg     { width:94%; }
+#lugarImg     { width:88%; cursor:pointer; }
+#horarioImg   { width:48%; }
+#esperamosImg { width:90%; cursor:pointer; }
+#vestimentaImg{ width:90%; }
+
+/* AUDIO PLAYER */
+.audio-player { width:84%; background:transparent; border:none; border-radius:16px; padding:14px 16px 12px; margin-bottom:0; }
+.ap-heart-row { display:flex; justify-content:flex-end; margin-bottom:6px; }
+.ap-heart { background:none; border:none; cursor:pointer; font-size:16px; color:#e57; transition:transform .2s; }
+.ap-heart:active { transform:scale(1.3); }
+.ap-heart.liked { color:#e53935; }
+.ap-progress { width:100%; height:3px; background:rgba(255,255,255,.2); border-radius:3px; cursor:pointer; margin-bottom:6px; position:relative; }
+.ap-fill { height:100%; width:0%; background:#fff; border-radius:3px; transition:width .3s linear; position:relative; }
+.ap-fill::after { content:''; position:absolute; right:-5px; top:-4px; width:11px; height:11px; background:#fff; border-radius:50%; }
+.ap-time { display:flex; justify-content:space-between; font-size:10px; color:rgba(255,255,255,.4); font-family:'Arial Narrow',Arial,sans-serif; margin-bottom:10px; }
+.ap-controls { display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:12px; }
+.ap-btn { background:none; border:none; cursor:pointer; color:rgba(255,255,255,.75); font-size:18px; padding:4px; transition:transform .15s, color .15s; }
+.ap-btn:hover { color:#fff; }
+.ap-btn:active { transform:scale(.88); }
+.ap-play { width:42px; height:42px; background:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; color:#111 !important; box-shadow:0 0 12px rgba(255,255,255,.25); }
+.ap-wave { display:flex; align-items:center; justify-content:center; gap:2px; height:36px; }
+.ap-wave span { display:block; width:3px; border-radius:2px; background:rgba(255,255,255,0.7); animation:waveBar 1.2s ease-in-out infinite; }
+.ap-wave span.paused { animation-play-state:paused; }
+@keyframes waveBar { 0%,100%{transform:scaleY(0.3)} 50%{transform:scaleY(1)} }
+
+/* CONTADOR */
+.faltan-wrap { position:relative; width:94%; }
+#faltanImg { width:100%; }
+#countOverlay {
+  position:absolute; bottom:2%; left:7%; width:86%;
+  display:flex; justify-content:space-around; align-items:center; pointer-events:none;
+}
+#countOverlay span {
+  flex:1; text-align:center;
+  font-size:clamp(22px,8vw,35px); font-weight:900; color:#fff;
+  font-family:'Arial Narrow',Arial,sans-serif; line-height:1;
+  text-shadow:1px 1px 2px rgba(0,0,0,0.5);
+}
+
+#audioEl { display:none; }
+
+/* FADE IN SUAVE */
+.fade-in-el {
+  opacity:0;
+  transform:translateY(12px);
+  transition:opacity 2.2s ease, transform 2.2s cubic-bezier(0.05,0.9,0.25,1);
+}
+.fade-in-el.visible { opacity:1; transform:translateY(0); }
+
+/* CANVAS TRANSICIÓN */
+#transCanvas { position:fixed; inset:0; pointer-events:none; z-index:9998; opacity:0; }
+#transCanvas.active { pointer-events:all; }
+</style>
+</head>
+<body>
+
+<canvas id="confettiCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9997;"></canvas>
+<canvas id="transCanvas"></canvas>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="cdot" style="width:9px;height:9px;background:#e53935;top:14%;left:17%;animation-delay:0s"></div>
+  <div class="cdot" style="width:7px;height:7px;background:#ffeb3b;top:19%;right:21%;animation-delay:.5s"></div>
+  <div class="cdot" style="width:8px;height:8px;background:#3b9ed4;top:68%;left:13%;animation-delay:1s"></div>
+  <div class="cdot" style="width:6px;height:6px;background:#c94fbf;top:73%;right:17%;animation-delay:1.5s"></div>
+  <div class="cdot" style="width:7px;height:7px;background:#4caf50;top:42%;left:8%;animation-delay:.8s"></div>
+  <div class="cdot" style="width:6px;height:6px;background:#ff9800;top:55%;right:9%;animation-delay:.3s"></div>
+  <div class="ld-flowers">
+    <div class="ld-ring" id="ldRing"></div>
+    <div class="ld-crown">👑</div>
+  </div>
+  <div class="ld-name">Grettel <span>Itzel</span></div>
+  <div class="ld-bar-wrap"><div class="ld-bar" id="ldBar"></div></div>
+  <div class="ld-txt" id="ldTxt">Cargando...</div>
+</div>
+
+<!-- INVITACIÓN -->
+<div class="inv-wrapper">
+  <div class="bg-frame">
+
+    <!-- Fondo oscuro -->
+    <img class="bg-img" src="Recurso 54SUSTITUÍR FINAL.png" alt="Fondo">
+
+    <!-- Marco floral lateral -->
+<!-- Bordes laterales -->
+<img class="borde-lateral" src="Recurso 55borde largo.png" alt="Marco lateral">
+<!-- Borde inferior — mismo recurso rotado -->
+<img class="borde-bottom" src="Recurso 56borde largo.png" alt="Borde inferior">
+
+    <div class="content">
+
+      <!-- 1. Papel picado — ancho completo -->
+      <div class="papel-wrap fade-in-el">
+        <img src="papel_picado.png" alt="Papel picado">
+      </div>
+      <div class="sp3"></div>
+
+            <!-- Confeti de colores -->
+<div class="confeti-wrap fade-in-el">
+  <img src="confeti.png" alt="Confeti">
+</div>
+      <!-- 2. 15 Grettel Itzel -->
+      <img class="res fade-in-el" id="portadaImg" src="gretel_itzel.png" alt="15 Grettel Itzel">
+      <div class="sp2"></div>
+
+      <!-- 3. Presiona para reproducir -->
+      <img class="res fade-in-el" id="presionaImg" src="REPRODUCCION.png" alt="Presiona para reproducir">
+
+      <!-- 4. Audio player — siempre visible -->
+      <div class="audio-player">
+        <div class="ap-heart-row">
+          <button class="ap-heart" id="btnHeart">🤍</button>
+        </div>
+        <div class="ap-progress" id="apProgress"><div class="ap-fill" id="apFill"></div></div>
+        <div class="ap-time"><span id="apCur">0:00</span><span id="apTot">0:00</span></div>
+        <div class="ap-controls">
+          <button class="ap-btn" id="btnShuffle" title="Shuffle">⇄</button>
+          <button class="ap-btn" id="btnPrev" title="Anterior">⏮</button>
+          <button class="ap-btn ap-play" id="btnPlay">▶</button>
+          <button class="ap-btn" id="btnNext" title="Siguiente">⏭</button>
+          <button class="ap-btn" id="btnStop" title="Stop">⏹</button>
+        </div>
+        <div class="ap-wave" id="apWave"></div>
+      </div>
+      <audio id="audioEl" src="HERMOSO CARIÑO  ARCANO.mp3" loop></audio>
+      <div class="sp2"></div>
+
+      <!-- 5. Mis Quince Años -->
+      <img class="res fade-in-el" id="misquinceImg" src="MIS XV LETRAS.png" alt="Mis Quince Años">
+      <div class="sp2"></div>
+
+      <!-- 6. Frase -->
+      <img class="res fade-in-el" id="fraseImg" src="Recurso 53SUSTITUÍR FINAL.png".png" alt="Frase">
+      <div class="sp2"></div>
+
+      <!-- 7. Foto de Grettel -->
+      <img class="res-normal fade-in-el" id="fotoImg" src="fotogrettel.png" alt="Foto Grettel Itzel">
+      <div class="sp2"></div>
+
+      <!-- 8. Fecha -->
+      <img class="res fade-in-el" id="fechaImg" src="FECHA.png" alt="Mayo 17 2026">
+      <div class="sp"></div>
+
+      <!-- 9. Faltan + contador -->
+      <div class="faltan-wrap fade-in-el">
+        <img class="res" id="faltanImg" src="FALTAN ITZEL.png" alt="Faltan">
+        <div id="countOverlay">
+          <span id="cDias">00</span>
+          <span id="cHoras">00</span>
+          <span id="cMins">00</span>
+          <span id="cSegs">00</span>
+        </div>
+      </div>
+      <div class="sp2"></div>
+
+      <!-- 10. Lugar -->
+      <img class="res fade-in-el" id="lugarImg" src="EJIDAL.png" alt="Casa Ejidal"
+           onclick="goldTransition(event,'https://maps.google.com/?q=Casa+Ejidal+Tecpatan+Chiapas')">
+      <div class="sp2"></div>
+
+      <!-- 11. Horario -->
+      <img class="res fade-in-el" id="horarioImg" src="HORARIO.png" alt="Horario 5:00 PM">
+      <div class="sp2"></div>
+
+      <!-- 12. Esperamos -->
+      <img class="res fade-in-el" id="esperamosImg" src="PRESENCIA.png" alt="Esperamos contar con tu presencia"
+           onclick="goldTransition(event,'https://wa.me/529615790017?text=Confirmo+mi+asistencia+a+los+XV+de+Grettel+Itzel')">
+      <div class="sp2"></div>
+
+      <!-- 13. Vestimenta -->
+      <img class="res fade-in-el" id="vestimentaImg" src="CODIGO.png" alt="Código de vestimenta">
+
+      <div class="sp-bottom"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// AUDIO PLAYER
+const audioEl  = document.getElementById('audioEl');
+const btnPlay  = document.getElementById('btnPlay');
+const apFill   = document.getElementById('apFill');
+let playing=false, liked=false;
+
+function setWave(on){
+  document.querySelectorAll('#apWave span').forEach(s=>s.classList.toggle('paused',!on));
+}
+
+const wave=document.getElementById('apWave');
+for(let i=0;i<28;i++){
+  const s=document.createElement('span');
+  s.style.cssText=`height:${18+Math.random()*18}px;animation-delay:${(i*0.04).toFixed(2)}s;`;
+  s.classList.add('paused'); wave.appendChild(s);
+}
+
+btnPlay.addEventListener('click',()=>{
+  if(playing){ audioEl.pause(); playing=false; btnPlay.textContent='▶'; setWave(false); }
+  else { audioEl.play().catch(()=>{}); playing=true; btnPlay.textContent='⏸'; setWave(true); }
+});
+document.getElementById('btnPrev').addEventListener('click',()=>{ audioEl.currentTime=0; });
+document.getElementById('btnNext').addEventListener('click',()=>{ audioEl.currentTime=0; });
+document.getElementById('btnStop').addEventListener('click',()=>{
+  audioEl.pause(); audioEl.currentTime=0; playing=false; btnPlay.textContent='▶'; setWave(false);
+});
+document.getElementById('btnShuffle').addEventListener('click',function(){
+  this.style.color=this.style.color==='rgb(255,255,255)'?'rgba(255,255,255,.75)':'#fff';
+});
+document.getElementById('btnHeart').addEventListener('click',function(){
+  liked=!liked; this.textContent=liked?'❤️':'🤍'; this.classList.toggle('liked',liked);
+});
+const fmt=s=>{ const m=Math.floor(s/60),sec=Math.floor(s%60); return m+':'+String(sec).padStart(2,'0'); };
+audioEl.addEventListener('timeupdate',()=>{
+  if(!audioEl.duration) return;
+  apFill.style.width=(audioEl.currentTime/audioEl.duration*100)+'%';
+  document.getElementById('apCur').textContent=fmt(audioEl.currentTime);
+});
+audioEl.addEventListener('loadedmetadata',()=>{ document.getElementById('apTot').textContent=fmt(audioEl.duration); });
+audioEl.addEventListener('ended',()=>{ playing=false; btnPlay.textContent='▶'; setWave(false); });
+document.getElementById('apProgress').addEventListener('click',e=>{
+  const r=e.currentTarget.getBoundingClientRect();
+  audioEl.currentTime=((e.clientX-r.left)/r.width)*audioEl.duration;
+});
+
+// CONTADOR
+function tick(){
+  const diff=new Date('2026-05-17T17:00:00')-new Date();
+  const pad=n=>String(Math.max(0,Math.floor(n))).padStart(2,'0');
+  document.getElementById('cDias').textContent  = pad(diff/86400000);
+  document.getElementById('cHoras').textContent = pad(diff%86400000/3600000);
+  document.getElementById('cMins').textContent  = pad(diff%3600000/60000);
+  document.getElementById('cSegs').textContent  = pad(diff%60000/1000);
+}
+tick(); setInterval(tick,1000);
+
+// LOADER
+const emojis=['🌸','🌺','🌼','🌸','🌺','🌼','🌸','🌺'];
+const ring=document.getElementById('ldRing');
+emojis.forEach((e,i)=>{
+  const s=document.createElement('span');
+  s.textContent=e;
+  const a=(i/emojis.length)*360*Math.PI/180, r=42;
+  s.style.cssText=`position:absolute;font-size:17px;left:calc(50% + ${Math.cos(a)*r}px - 8px);top:calc(50% + ${Math.sin(a)*r}px - 8px);`;
+  ring.appendChild(s);
+});
+const ldBar=document.getElementById('ldBar'), ldTxt=document.getElementById('ldTxt');
+const msgs={20:'Preparando flores...',50:'Cargando música...',75:'Casi lista...',95:'¡Ya casi!'};
+let prog=0;
+const ldInt=setInterval(()=>{
+  prog=Math.min(prog+(prog<70?Math.random()*5+2:Math.random()*1.5+0.3),99);
+  ldBar.style.width=prog+'%';
+  for(const[p,m]of Object.entries(msgs)) if(prog>=p) ldTxt.textContent=m;
+},200);
+
+const allImgs=document.querySelectorAll('img'); let loaded=0;
+function imgDone(){
+  if(++loaded>=allImgs.length){
+    clearInterval(ldInt); ldBar.style.width='100%'; ldTxt.textContent='¡Lista! 🎉';
+    setTimeout(()=>{
+      document.getElementById('loader').classList.add('hidden');
+      launchConfetti();
+      // Primeros 3 fade-in-el entran con delay al cargar
+      const fadeEls=document.querySelectorAll('.fade-in-el');
+      fadeEls.forEach((el,i)=>{
+        if(i<3) setTimeout(()=> el.classList.add('visible'), 400 + i*450);
+      });
+    },600);
+  }
+}
+allImgs.forEach(img=>{ if(img.complete) imgDone(); else{ img.addEventListener('load',imgDone); img.addEventListener('error',imgDone); }});
+setTimeout(()=>{
+  document.getElementById('loader').classList.add('hidden');
+  launchConfetti();
+  const fadeEls=document.querySelectorAll('.fade-in-el');
+  fadeEls.forEach((el,i)=>{
+    if(i<3) setTimeout(()=> el.classList.add('visible'), 400 + i*450);
+  });
+},9000);
+
+// CONFETI
+function launchConfetti(){
+  const canvas=document.getElementById('confettiCanvas');
+  const ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+  const colors=['#d4a820','#f5d77a','#fff','#e53935','#c94fbf','#3b9ed4','#4caf50','#ff9800'];
+  const pieces=Array.from({length:80},()=>({
+    x:Math.random()*canvas.width, y:-10-Math.random()*150,
+    w:5+Math.random()*7, h:3+Math.random()*4,
+    color:colors[Math.floor(Math.random()*colors.length)],
+    vx:(Math.random()-.5)*2.5, vy:1.5+Math.random()*2.5,
+    angle:Math.random()*360, spin:(Math.random()-.5)*6, opacity:1
+  }));
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    let alive=0;
+    pieces.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.angle+=p.spin; p.vy+=0.03;
+      if(frame>90) p.opacity=Math.max(0,p.opacity-0.01);
+      if(p.opacity>0) alive++;
+      ctx.save(); ctx.globalAlpha=p.opacity;
+      ctx.translate(p.x,p.y); ctx.rotate(p.angle*Math.PI/180);
+      ctx.fillStyle=p.color; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    frame++;
+    if(alive>0) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+// SCROLL: elementos del 3 en adelante
+const fadeObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      fadeObs.unobserve(e.target);
+    }
+  });
+},{ threshold:0, rootMargin:'0px 0px -50px 0px' });
+
+document.querySelectorAll('.fade-in-el').forEach((el,i)=>{
+  if(i>=3){
+    const rect=el.getBoundingClientRect();
+    if(rect.top < window.innerHeight){
+      setTimeout(()=> el.classList.add('visible'),200);
+    } else {
+      fadeObs.observe(el);
+    }
+  }
+});
+
+// TRANSICIÓN PARTÍCULAS DORADAS
+function goldTransition(e, url){
+  const canvas=document.getElementById('transCanvas');
+  const ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+  canvas.style.opacity='1'; canvas.classList.add('active');
+
+  const ox=(e.touches?e.touches[0].clientX:e.clientX)||window.innerWidth/2;
+  const oy=(e.touches?e.touches[0].clientY:e.clientY)||window.innerHeight/2;
+  const colors=['#d4a820','#f5d77a','#ffe066','#fff8c0','#e8b800'];
+
+  const particles=Array.from({length:100},()=>{
+    const angle=Math.random()*Math.PI*2, speed=4+Math.random()*9;
+    return { x:ox, y:oy, vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed, r:2+Math.random()*5, color:colors[Math.floor(Math.random()*colors.length)], opacity:1 };
+  });
+
+  const maxR=Math.hypot(Math.max(ox,canvas.width-ox),Math.max(oy,canvas.height-oy))+20;
+  let waveR=0, frame=0, done=false;
+
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const bgA=Math.min(0.95,waveR/maxR*1.2);
+    if(bgA>0){ ctx.fillStyle=`rgba(10,6,0,${bgA})`; ctx.fillRect(0,0,canvas.width,canvas.height); }
+
+    particles.forEach(p=>{
+      if(frame<50){ p.x+=p.vx; p.y+=p.vy; p.vy+=0.2; p.vx*=0.96; }
+      p.opacity=Math.max(0,p.opacity-0.012);
+      if(p.opacity>0){
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=p.color; ctx.globalAlpha=p.opacity; ctx.fill(); ctx.globalAlpha=1;
+      }
+    });
+
+    if(frame>20){
+      waveR+=(maxR-waveR)*0.06+7;
+      const grad=ctx.createRadialGradient(ox,oy,waveR*0.5,ox,oy,waveR);
+      grad.addColorStop(0,'rgba(212,168,32,0)');
+      grad.addColorStop(0.75,'rgba(212,168,32,0.25)');
+      grad.addColorStop(1,'rgba(255,220,60,0.9)');
+      ctx.beginPath(); ctx.arc(ox,oy,waveR,0,Math.PI*2);
+      ctx.fillStyle=grad; ctx.fill();
+      for(let i=0;i<5;i++){
+        const a=Math.random()*Math.PI*2, pr=waveR+(Math.random()-.5)*18;
+        ctx.beginPath(); ctx.arc(ox+Math.cos(a)*pr,oy+Math.sin(a)*pr,1.5+Math.random()*3,0,Math.PI*2);
+        ctx.fillStyle=colors[Math.floor(Math.random()*colors.length)]; ctx.globalAlpha=0.9; ctx.fill(); ctx.globalAlpha=1;
+      }
+    }
+
+    frame++;
+
+    if(waveR>=maxR&&!done){
+      done=true;
+      setTimeout(()=>{
+        document.querySelector('.inv-wrapper').style.opacity='0';
+        document.querySelector('.inv-wrapper').style.transition='opacity 0.3s ease';
+        location.href=url;
+        let fo=1;
+        const fade=setInterval(()=>{
+          fo-=0.05;
+          canvas.style.opacity=String(Math.max(0,fo));
+          if(fo<=0){
+            clearInterval(fade);
+            canvas.classList.remove('active');
+            canvas.style.opacity='0';
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+          }
+        },16);
+      },150);
+      return;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+</script>
+</body>
+</html>
